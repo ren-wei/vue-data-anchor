@@ -8,7 +8,7 @@
             "es2021"
         ],
         "sourceMap": false,
-        "rootDir": "src",
+        "rootDir": ".",
         "strict": true
     },
     "exclude": [

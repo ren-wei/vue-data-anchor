@@ -4,7 +4,7 @@ import packageJSON from './package.json';
 
 const commonConfig = {
     input: 'src/index.ts',
-    plugins: [commonjs(), typescript()],
+    plugins: [commonjs(), typescript({ tsconfig: 'tsconfig.json' })],
 };
 
 const outputList = [
