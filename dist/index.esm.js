@@ -1,9 +1,18 @@
 const VueAnchor = {
     install(Vue, options) {
-        console.log('VueAnchor installed');
+        const mergedOptions = Object.assign({
+            anchor: 'anchor',
+        }, options);
+        const { anchor } = mergedOptions;
         Vue.mixin({
             created() {
-                console.log('created');
+                const anchorOptions = this.$options[anchor];
+                if (anchorOptions) {
+                    Object.entries(anchorOptions).forEach(([name, config]) => {
+                        console.log('name:', name);
+                        console.log('config:', config);
+                    });
+                }
             },
         });
     },
