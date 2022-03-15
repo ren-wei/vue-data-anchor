@@ -110,7 +110,6 @@
         "no-self-compare": 2,
         "no-sequences": 2,
         "func-call-spacing": 2,
-        "no-throw-literal": 2,
         "no-trailing-spaces": 2,
         "no-undef-init": 2,
         "no-unmodified-loop-condition": 2,
