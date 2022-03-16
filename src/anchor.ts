@@ -93,10 +93,10 @@ class Anchor {
             case 'boolean':
                 return value ? 'b1' : 'b0';
             case 'undefined':
-                return 'u';
+                return 'd';
             case 'object':
                 if (value === null) {
-                    return 'l';
+                    return 'u';
                 } else {
                     return 'o' + encodeURI(JSON.stringify(value));
                 }
@@ -117,9 +117,9 @@ class Anchor {
                 return BigInt(raw);
             case 'b':
                 return raw === 'b1';
-            case 'u':
+            case 'd':
                 return undefined;
-            case 'l':
+            case 'u':
                 return null;
             case 'o':
                 return JSON.parse(raw);
@@ -147,7 +147,7 @@ class Anchor {
             current = current[k];
             targetKey = k;
         });
-        target[targetKey] = value;
+        this.vm.$set(target, targetKey, value);
     }
 }
 
