@@ -1,4 +1,5 @@
 import Vue from "vue";
+import VueRouter from 'vue-router';
 import Anchor from '../src/anchor';
 
 declare module 'vue/types/vue' {
