@@ -7,6 +7,7 @@
     class Anchor {
         constructor(vm) {
             this.unWatchs = {};
+            this.options = {};
             this.vm = vm;
             this.register(this.vm.$options.anchor);
         }
@@ -14,12 +15,13 @@
             const options = anchorOptions.map(item => this.getDefaultOption(item));
             // For each option, bind key to the corresponding part of the url.
             options.forEach((option) => {
-                this.restore(option.key, option);
-                this.update(option.key, option);
                 this.unregister(option.key);
+                this.options[option.key] = option;
+                this.restore(option.key);
+                this.update(option.key);
                 this.unWatchs[option.key] = [
-                    this.vm.$watch(option.key, () => this.update(option.key, option)),
-                    this.vm.$watch(`$route.query.${option.key}`, () => this.restore(option.key, option)),
+                    this.vm.$watch(option.key, () => this.update(option.key)),
+                    this.vm.$watch(`$route.query.${option.name}`, () => this.restore(option.key)),
                 ];
             });
         }
@@ -27,45 +29,45 @@
             if (this.unWatchs[key]) {
                 this.unWatchs[key].forEach(cb => cb());
                 delete this.unWatchs[key];
+                delete this.options[key];
                 return true;
             }
             return false;
         }
-        update(key, option = null) {
-            if (option === null)
-                option = this.getDefaultOption(key);
+        update(key) {
+            const option = this.options[key];
             const value = this.getValue(key);
             const packValue = this.pack(value);
             // When the value has not changed, return directly.
-            if (packValue === this.vm.$route.query[key])
+            if (packValue === this.vm.$route.query[option.name])
                 return;
             // Update the corresponding part of the url based on the value of the key.
             if (value !== option.defaults) {
                 const query = Object.assign(Object.assign({}, this.vm.$route.query), {
-                    [key]: packValue,
+                    [option.name]: packValue,
                 });
                 this.vm.$router.replace({
                     query: query,
                 });
             }
-            else if (this.vm.$route.query[key]) {
+            else if (this.vm.$route.query[option.name]) {
                 // When the value of key is the same as the default value, delete the corresponding part of the url.
                 const query = Object.assign({}, this.vm.$route.query);
-                delete query[key];
+                delete query[option.name];
                 this.vm.$router.replace({
                     query: query,
                 });
             }
         }
-        restore(key, option = null) {
-            if (option === null)
-                option = this.getDefaultOption(key);
-            const packValue = this.vm.$route.query[key];
+        restore(key) {
+            const option = this.options[key];
+            const packValue = this.vm.$route.query[option.name];
             if (packValue) {
                 this.setValue(key, this.unpack(packValue));
             }
         }
         getDefaultOption(item) {
+            // Convert string to AnchorOption.
             let option;
             if (typeof item === 'string') {
                 option = {
@@ -75,9 +77,11 @@
             else {
                 option = item;
             }
-            // Default value is set to the current value of the key.
+            // Complete default value.
             if (!option.defaults)
                 option.defaults = this.getValue(option.key);
+            if (!option.name)
+                option.name = option.key;
             return option;
         }
         pack(value) {
