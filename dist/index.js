@@ -91,7 +91,7 @@
                 case 'string':
                     return 's' + encodeURI(value);
                 case 'number':
-                    return 'n' + encodeURI(value);
+                    return '0' + encodeURI(value);
                 case 'bigint':
                     return 'i' + encodeURI(value);
                 case 'boolean':
@@ -115,7 +115,7 @@
             switch (typeofValue) {
                 case 's':
                     return raw;
-                case 'n':
+                case '0':
                     return Number(raw);
                 case 'i':
                     return BigInt(raw);
