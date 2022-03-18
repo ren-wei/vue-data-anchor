@@ -97,14 +97,14 @@ class Anchor {
             case 'bigint':
                 return 'i' + encodeURI(value);
             case 'boolean':
-                return value ? 'b1' : 'b0';
+                return value ? 't' : 'f';
             case 'undefined':
-                return 'd';
+                return '-';
             case 'object':
                 if (value === null) {
                     return 'u';
                 } else {
-                    return 'o' + encodeURI(JSON.stringify(value));
+                    return '*' + encodeURI(JSON.stringify(value));
                 }
             default:
                 throw (`[vue-anchor]: The value of type "${typeofValue}" are not supported.`);
@@ -121,13 +121,15 @@ class Anchor {
                 return Number(raw);
             case 'i':
                 return BigInt(raw);
-            case 'b':
-                return raw === 'b1';
-            case 'd':
+            case 't':
+                return true;
+            case 'f':
+                return false;
+            case '-':
                 return undefined;
             case 'u':
                 return null;
-            case 'o':
+            case '*':
                 return JSON.parse(raw);
             default:
                 throw ('[vue-anchor]: Could not restore value correctly. The url may have changed.');
