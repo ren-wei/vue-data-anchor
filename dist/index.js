@@ -42,7 +42,8 @@
             if (packValue === this.vm.$route.query[option.name])
                 return;
             // Update the corresponding part of the url based on the value of the key.
-            if (value !== option.defaults) {
+            const defaults = typeof option.defaults === 'function' ? option.defaults(key) : option.defaults;
+            if (value !== defaults) {
                 const query = Object.assign(Object.assign({}, this.vm.$route.query), {
                     [option.name]: packValue,
                 });
