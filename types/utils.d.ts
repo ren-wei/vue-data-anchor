@@ -1,1 +1,1 @@
-type Dictionary<T> = { [key: string]: T }
+type Dictionary<T> = { [key: string]: T };
