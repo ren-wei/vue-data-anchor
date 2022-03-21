@@ -4,9 +4,11 @@ class Anchor {
     private vm: Vue;
     private unWatchs: Dictionary<(() => void)[]> = {};
     private options: Dictionary<AnchorOption> = {};
+    private pluginOptions: PluginOptions;
 
-    constructor(vm: Vue) {
+    constructor(vm: Vue, pluginOptions?: PluginOptions) {
         this.vm = vm;
+        this.pluginOptions = pluginOptions || {};
         this.register(this.vm.$options.anchor);
     }
 
@@ -44,6 +46,7 @@ class Anchor {
         // When the value has not changed, return directly.
         if (packValue === oldPackValue) return;
 
+        if (this.pluginOptions.beforeUpdate) this.pluginOptions.beforeUpdate(key, this.unpack(oldPackValue));
         if (option.beforeUpdate) option.beforeUpdate(key, this.unpack(oldPackValue));
 
         // If mode is true, update the value.
@@ -53,6 +56,9 @@ class Anchor {
 
         if (option.updateCheck) {
             mode = option.updateCheck(key, value);
+            if (mode === null) return;
+        } else if (this.pluginOptions.updateCheck) {
+            mode = this.pluginOptions.updateCheck(key, value);
             if (mode === null) return;
         }
 
@@ -75,6 +81,7 @@ class Anchor {
         }
 
         if (mode && option.afterUpdate) option.afterUpdate(key, value);
+        if (mode && this.pluginOptions.afterUpdate) this.pluginOptions.afterUpdate(key, value);
     }
 
     public restore(key: string): void {
@@ -83,9 +90,11 @@ class Anchor {
         const value = this.unpack(packValue);
 
         if (packValue && option.restore) {
+            if (this.pluginOptions.beforeRestore) this.pluginOptions.beforeRestore(key, value);
             if (option.beforeRestore) option.beforeRestore(key, value);
             option.restore(key, value);
             if (option.afterRestore) option.afterRestore(key, value);
+            if (this.pluginOptions.afterRestore) this.pluginOptions.afterRestore(key, value);
         }
     }
 

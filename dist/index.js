@@ -5,10 +5,11 @@
 })(this, (function () { 'use strict';
 
     class Anchor {
-        constructor(vm) {
+        constructor(vm, pluginOptions) {
             this.unWatchs = {};
             this.options = {};
             this.vm = vm;
+            this.pluginOptions = pluginOptions || {};
             this.register(this.vm.$options.anchor);
         }
         register(anchorOptions = []) {
@@ -42,6 +43,8 @@
             // When the value has not changed, return directly.
             if (packValue === oldPackValue)
                 return;
+            if (this.pluginOptions.beforeUpdate)
+                this.pluginOptions.beforeUpdate(key, this.unpack(oldPackValue));
             if (option.beforeUpdate)
                 option.beforeUpdate(key, this.unpack(oldPackValue));
             // If mode is true, update the value.
@@ -50,6 +53,11 @@
             let mode = true;
             if (option.updateCheck) {
                 mode = option.updateCheck(key, value);
+                if (mode === null)
+                    return;
+            }
+            else if (this.pluginOptions.updateCheck) {
+                mode = this.pluginOptions.updateCheck(key, value);
                 if (mode === null)
                     return;
             }
@@ -73,17 +81,23 @@
             }
             if (mode && option.afterUpdate)
                 option.afterUpdate(key, value);
+            if (mode && this.pluginOptions.afterUpdate)
+                this.pluginOptions.afterUpdate(key, value);
         }
         restore(key) {
             const option = this.options[key];
             const packValue = this.vm.$route.query[option.name];
             const value = this.unpack(packValue);
             if (packValue && option.restore) {
+                if (this.pluginOptions.beforeRestore)
+                    this.pluginOptions.beforeRestore(key, value);
                 if (option.beforeRestore)
                     option.beforeRestore(key, value);
                 option.restore(key, value);
                 if (option.afterRestore)
                     option.afterRestore(key, value);
+                if (this.pluginOptions.afterRestore)
+                    this.pluginOptions.afterRestore(key, value);
             }
         }
         getDefaultOption(item) {
@@ -180,7 +194,7 @@
         install(Vue, options) {
             Vue.mixin({
                 created() {
-                    this.$anchor = new Anchor(this);
+                    this.$anchor = new Anchor(this, options);
                 },
             });
         },

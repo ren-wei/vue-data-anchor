@@ -5,7 +5,7 @@ const VueAnchor: PluginObject<PluginOptions> = {
     install(Vue, options) {
         Vue.mixin({
             created() {
-                this.$anchor = new Anchor(this);
+                this.$anchor = new Anchor(this, options);
             },
         });
     },
