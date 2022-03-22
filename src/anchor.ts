@@ -135,7 +135,7 @@ class Anchor {
                     return '*' + encodeURI(JSON.stringify(value));
                 }
             default:
-                throw (`[vue-anchor]: The value of type "${typeofValue}" are not supported.`);
+                throw (`[vue-data-anchor]: The value of type "${typeofValue}" are not supported.`);
         }
     }
 
@@ -160,7 +160,7 @@ class Anchor {
             case '*':
                 return JSON.parse(raw);
             default:
-                throw ('[vue-anchor]: Could not restore value correctly. The url may have changed.');
+                throw ('[vue-data-anchor]: Could not restore value correctly. The url may have changed.');
         }
     }
 

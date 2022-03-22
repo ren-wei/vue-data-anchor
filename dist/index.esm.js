@@ -135,7 +135,7 @@ class Anchor {
                     return '*' + encodeURI(JSON.stringify(value));
                 }
             default:
-                throw (`[vue-anchor]: The value of type "${typeofValue}" are not supported.`);
+                throw (`[vue-data-anchor]: The value of type "${typeofValue}" are not supported.`);
         }
     }
     unpack(packValue) {
@@ -159,7 +159,7 @@ class Anchor {
             case '*':
                 return JSON.parse(raw);
             default:
-                throw ('[vue-anchor]: Could not restore value correctly. The url may have changed.');
+                throw ('[vue-data-anchor]: Could not restore value correctly. The url may have changed.');
         }
     }
     /** Get value from vue's data. */
@@ -184,7 +184,7 @@ class Anchor {
     }
 }
 
-const VueAnchor = {
+const VueDataAnchor = {
     install(Vue, options) {
         Vue.mixin({
             created() {
@@ -194,4 +194,4 @@ const VueAnchor = {
     },
 };
 
-export { VueAnchor as default };
+export { VueDataAnchor as default };

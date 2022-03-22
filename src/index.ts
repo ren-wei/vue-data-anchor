@@ -1,7 +1,7 @@
 import { PluginObject } from 'vue';
 import Anchor from './anchor';
 
-const VueAnchor: PluginObject<PluginOptions> = {
+const VueDataAnchor: PluginObject<PluginOptions> = {
     install(Vue, options) {
         Vue.mixin({
             created() {
@@ -11,4 +11,4 @@ const VueAnchor: PluginObject<PluginOptions> = {
     },
 };
 
-export default VueAnchor;
+export default VueDataAnchor;

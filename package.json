@@ -1,5 +1,5 @@
 {
-    "name": "vue-anchor",
+    "name": "vue-data-anchor",
     "version": "0.1.0",
     "description": "Anchor vue state and bind it to a route.",
     "main": "dist/index.js",
@@ -12,7 +12,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/ren-wei/vue-anchor.git"
+        "url": "git+https://github.com/ren-wei/vue-data-anchor.git"
     },
     "keywords": [
         "vue",
@@ -23,9 +23,9 @@
     "author": "ren-wei <demonre@foxmail.com>",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/ren-wei/vue-anchor/issues"
+        "url": "https://github.com/ren-wei/vue-data-anchor/issues"
     },
-    "homepage": "https://github.com/ren-wei/vue-anchor#readme",
+    "homepage": "https://github.com/ren-wei/vue-data-anchor#readme",
     "devDependencies": {
         "@rollup/plugin-commonjs": "^21.0.2",
         "@rollup/plugin-typescript": "^8.3.1",

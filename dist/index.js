@@ -1,7 +1,7 @@
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
     typeof define === 'function' && define.amd ? define(factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global["vue-anchor"] = factory());
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global["vue-data-anchor"] = factory());
 })(this, (function () { 'use strict';
 
     class Anchor {
@@ -141,7 +141,7 @@
                         return '*' + encodeURI(JSON.stringify(value));
                     }
                 default:
-                    throw (`[vue-anchor]: The value of type "${typeofValue}" are not supported.`);
+                    throw (`[vue-data-anchor]: The value of type "${typeofValue}" are not supported.`);
             }
         }
         unpack(packValue) {
@@ -165,7 +165,7 @@
                 case '*':
                     return JSON.parse(raw);
                 default:
-                    throw ('[vue-anchor]: Could not restore value correctly. The url may have changed.');
+                    throw ('[vue-data-anchor]: Could not restore value correctly. The url may have changed.');
             }
         }
         /** Get value from vue's data. */
@@ -190,7 +190,7 @@
         }
     }
 
-    const VueAnchor = {
+    const VueDataAnchor = {
         install(Vue, options) {
             Vue.mixin({
                 created() {
@@ -200,6 +200,6 @@
         },
     };
 
-    return VueAnchor;
+    return VueDataAnchor;
 
 }));
