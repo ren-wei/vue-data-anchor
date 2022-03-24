@@ -1,10 +1,10 @@
 import Vue from 'vue';
 
 class Anchor {
+    public pluginOptions: PluginOptions;
+    public options: Dictionary<AnchorOption> = {};
     private vm: Vue;
     private unWatchs: Dictionary<(() => void)[]> = {};
-    private options: Dictionary<AnchorOption> = {};
-    private pluginOptions: PluginOptions;
 
     constructor(vm: Vue, pluginOptions?: PluginOptions) {
         this.vm = vm;
@@ -139,7 +139,14 @@ class Anchor {
         }
     }
 
-    private unpack(packValue: string): any {
+    private unpack(packValue: string | (string | null)[]): any {
+        if (typeof packValue !== 'string') {
+            if (packValue[0]) {
+                packValue = packValue[0];
+            } else {
+                throw ('[vue-data-anchor]: Could not restore value correctly. The url may have changed.');
+            }
+        }
         const typeofValue = packValue[0];
         const raw = decodeURI(packValue.slice(1));
         switch (typeofValue) {

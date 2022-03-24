@@ -1,7 +1,7 @@
 class Anchor {
     constructor(vm, pluginOptions) {
-        this.unWatchs = {};
         this.options = {};
+        this.unWatchs = {};
         this.vm = vm;
         this.pluginOptions = pluginOptions || {};
         this.register(this.vm.$options.anchor);
@@ -139,6 +139,14 @@ class Anchor {
         }
     }
     unpack(packValue) {
+        if (typeof packValue !== 'string') {
+            if (packValue[0]) {
+                packValue = packValue[0];
+            }
+            else {
+                throw ('[vue-data-anchor]: Could not restore value correctly. The url may have changed.');
+            }
+        }
         const typeofValue = packValue[0];
         const raw = decodeURI(packValue.slice(1));
         switch (typeofValue) {

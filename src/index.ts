@@ -5,7 +5,7 @@ const VueDataAnchor: PluginObject<PluginOptions> = {
     install(Vue, options) {
         Vue.mixin({
             created() {
-                this.$anchor = new Anchor(this, options);
+                (this as Vue).$anchor = new Anchor((this as Vue), options);
             },
         });
     },
