@@ -5,12 +5,11 @@
         "moduleResolution": "node",
         "target": "es2021",
         "outDir": "dist",
-        "lib": [
-            "es2021"
-        ],
+        "lib": ["es2021"],
         "sourceMap": false,
         "rootDir": ".",
-        "strict": true
+        "strict": true,
+        "typeRoots": ["node_modules/@types"]
     },
     "exclude": [
         "node_modules",
