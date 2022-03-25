@@ -87,35 +87,18 @@ class Anchor {
     public restore(key: string): void {
         const option = this.options[key];
         const packValue = this.vm.$route.query[option.name as string];
-        const value = this.unpack(packValue);
 
         if (packValue && option.restore) {
+            const value = this.unpack(packValue);
             if (this.pluginOptions.beforeRestore) this.pluginOptions.beforeRestore(key, value);
             if (option.beforeRestore) option.beforeRestore(key, value);
-            option.restore(key, value);
+            option.restore.bind(this)(key, value);
             if (option.afterRestore) option.afterRestore(key, value);
             if (this.pluginOptions.afterRestore) this.pluginOptions.afterRestore(key, value);
         }
     }
 
-    private getDefaultOption(item: string | AnchorOption) {
-        // Convert string to AnchorOption.
-        let option: AnchorOption;
-        if (typeof item === 'string') {
-            option = {
-                key: item,
-            };
-        } else {
-            option = item;
-        }
-        // Complete default value.
-        if (!option.defaults) option.defaults = this.getValue(option.key);
-        if (!option.name) option.name = option.key;
-        if (!option.restore) option.restore = this.setValue;
-        return option;
-    }
-
-    private pack(value: any): string {
+    public pack(value: any): string {
         const typeofValue = typeof value;
         switch (typeofValue) {
             case 'string':
@@ -139,7 +122,7 @@ class Anchor {
         }
     }
 
-    private unpack(packValue: string | (string | null)[]): any {
+    public unpack(packValue: string | (string | null)[]): any {
         if (typeof packValue !== 'string') {
             if (packValue[0]) {
                 packValue = packValue[0];
@@ -169,6 +152,23 @@ class Anchor {
             default:
                 throw ('[vue-data-anchor]: Could not restore value correctly. The url may have changed.');
         }
+    }
+
+    private getDefaultOption(item: string | AnchorOption) {
+        // Convert string to AnchorOption.
+        let option: AnchorOption;
+        if (typeof item === 'string') {
+            option = {
+                key: item,
+            };
+        } else {
+            option = item;
+        }
+        // Complete default value.
+        if (!option.defaults) option.defaults = this.getValue(option.key);
+        if (!option.name) option.name = option.key;
+        if (!option.restore) option.restore = this.setValue;
+        return option;
     }
 
     /** Get value from vue's data. */
