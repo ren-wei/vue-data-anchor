@@ -122,12 +122,15 @@ class Anchor {
         }
     }
 
-    public unpack(packValue: string | (string | null)[]): any {
+    public unpack(packValue: string | (string | null)[] | undefined): any {
+        if (packValue === undefined) {
+            return undefined;
+        }
         if (typeof packValue !== 'string') {
             if (packValue[0]) {
                 packValue = packValue[0];
             } else {
-                throw ('[vue-data-anchor]: Could not restore value correctly. The url may have changed.');
+                throw ('[vue-data-anchor]: Could not restore value correctly.');
             }
         }
         const typeofValue = packValue[0];

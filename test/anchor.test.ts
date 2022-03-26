@@ -17,7 +17,7 @@ describe('Anchor', () => {
         expect(Object.keys(anchor.options).length).toBe(0);
     });
 
-    it('The changed `key` value should be bound to `$route.query[key]`.', async() => {
+    it('The changed the `key` value of a basic data type should be bound to `$route.query[key]`.', async() => {
         const app = {
             template: '<div></div>',
             data() {
@@ -26,9 +26,10 @@ describe('Anchor', () => {
                     count: 1,
                     big: BigInt(12345678987654321),
                     flag: false,
+                    dynamic: 'dynamic',
                 };
             },
-            anchor: ['name', 'count', 'big', 'flag'],
+            anchor: ['name', 'count', 'big', 'flag', 'dynamic'],
         };
         const router = new VueRouter({ routes: [{ path: '/', component: app }] });
         const wrapper = mount(app, {
@@ -58,5 +59,15 @@ describe('Anchor', () => {
         wrapper.vm.$data.flag = true;
         await wrapper.vm.$nextTick();
         expect(anchor.unpack(wrapper.vm.$route.query.flag)).toBeTruthy();
+
+        // change to undefined value
+        wrapper.vm.$data.dynamic = undefined;
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.$route.query.dynamic).toBe('-');
+
+        // change to null value
+        wrapper.vm.$data.dynamic = null;
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query.dynamic)).toBeNull();
     });
 });
