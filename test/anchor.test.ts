@@ -17,7 +17,7 @@ describe('Anchor', () => {
         expect(Object.keys(anchor.options).length).toBe(0);
     });
 
-    it('The changed the `key` value of a basic data type should be bound to `$route.query[key]`.', async() => {
+    it('The changed the `key` value of a basic type should be bound to `$route.query[key]`.', async() => {
         const app = {
             template: '<div></div>',
             data() {
@@ -69,5 +69,30 @@ describe('Anchor', () => {
         wrapper.vm.$data.dynamic = null;
         await wrapper.vm.$nextTick();
         expect(anchor.unpack(wrapper.vm.$route.query.dynamic)).toBeNull();
+    });
+
+    it('The `key` value of the property of the changed object should be bound to `$route.query[key]`.', async() => {
+        const app = {
+            template: '<div></div>',
+            data() {
+                return {
+                    params: {
+                        pageNum: 1,
+                    },
+                };
+            },
+            anchor: ['params.pageNum'],
+        };
+        const router = new VueRouter({ routes: [{ path: '/', component: app }] });
+        const wrapper = mount(app, {
+            localVue,
+            router,
+        });
+        const anchor = new Anchor(wrapper.vm);
+        wrapper.vm.$anchor = anchor;
+
+        wrapper.vm.$data.params.pageNum = 2;
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query['params.pageNum'])).toBe(2);
     });
 });
