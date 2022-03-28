@@ -95,4 +95,34 @@ describe('Anchor', () => {
         await wrapper.vm.$nextTick();
         expect(anchor.unpack(wrapper.vm.$route.query['params.pageNum'])).toBe(2);
     });
+
+    it('The `key` value of the object type should be bound to `$route.query[key]`.', async() => {
+        const app = {
+            template: '<div></div>',
+            data() {
+                return {
+                    params: {
+                        pageNum: 1,
+                    },
+                };
+            },
+            anchor: ['params'],
+        };
+        const router = new VueRouter({ routes: [{ path: '/', component: app }] });
+        const wrapper = mount(app, {
+            localVue,
+            router,
+        });
+        const anchor = new Anchor(wrapper.vm);
+        wrapper.vm.$anchor = anchor;
+        anchor.unregister('params.pageNum'); // Clean up the impact of other test cases.
+
+        wrapper.vm.$data.params = { pageNum: 2 };
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query['params'])).toEqual({ pageNum: 2 });
+
+        wrapper.vm.$data.params.pageNum = 3;
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query['params'])).toEqual({ pageNum: 3 });
+    });
 });

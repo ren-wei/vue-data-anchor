@@ -21,8 +21,8 @@ class Anchor {
             this.restore(option.key);
             this.update(option.key);
             this.unWatchs[option.key] = [
-                this.vm.$watch(option.key, () => this.update(option.key)),
-                this.vm.$watch(`$route.query.${option.name}`, () => this.restore(option.key)),
+                this.vm.$watch(option.key, () => this.update(option.key), { deep: true }),
+                this.vm.$watch(`$route.query.${option.name}`, () => this.restore(option.key), { deep: true }),
             ];
         });
     }
