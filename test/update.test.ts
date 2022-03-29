@@ -125,4 +125,49 @@ describe('update', () => {
         await wrapper.vm.$nextTick();
         expect(anchor.unpack(wrapper.vm.$route.query['params'])).toEqual({ pageNum: 3 });
     });
+
+    it('When unregister `key` value, unbind the value.', async() => {
+        const app = {
+            template: '<div></div>',
+            data() {
+                return {
+                    name: 'anchor',
+                    count: 1,
+                    big: BigInt(12345678987654321),
+                    flag: false,
+                    dynamic: 'dynamic',
+                };
+            },
+            anchor: ['name', 'count', 'big', 'flag', 'dynamic'],
+        };
+        const router = new VueRouter({ routes: [{ path: '/', component: app }] });
+        const wrapper = mount(app, {
+            localVue,
+            router,
+        });
+        const anchor = new Anchor(wrapper.vm);
+        wrapper.vm.$anchor = anchor;
+
+        // first change string value
+        wrapper.vm.$data.name = 'first change';
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query.name)).toBe('first change');
+
+        // first change number value
+        wrapper.vm.$data.count = 2;
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query.count)).toBe(2);
+
+        anchor.unregister('name');
+
+        // second change string value
+        wrapper.vm.$data.name = 'second change';
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query.name)).toBe('first change');
+
+        // second change number value
+        wrapper.vm.$data.count = 3;
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query.count)).toBe(3);
+    });
 });
