@@ -8,7 +8,7 @@ import Anchor from '../src/anchor';
 const localVue = createLocalVue();
 localVue.use(VueRouter);
 
-describe('Anchor', () => {
+describe('update', () => {
     it('Empty options should be generated before registration.', () => {
         const wrapper = shallowMount({
             template: '<div></div>',
