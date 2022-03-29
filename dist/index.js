@@ -21,8 +21,8 @@
                 this.restore(option.key);
                 this.update(option.key);
                 this.unWatchs[option.key] = [
-                    this.vm.$watch(option.key, () => this.update(option.key)),
-                    this.vm.$watch(`$route.query.${option.name}`, () => this.restore(option.key)),
+                    this.vm.$watch(option.key, () => this.update(option.key), { deep: true }),
+                    this.vm.$watch(`$route.query.${option.name}`, () => this.restore(option.key), { deep: true }),
                 ];
             });
         }
@@ -87,38 +87,18 @@
         restore(key) {
             const option = this.options[key];
             const packValue = this.vm.$route.query[option.name];
-            const value = this.unpack(packValue);
             if (packValue && option.restore) {
+                const value = this.unpack(packValue);
                 if (this.pluginOptions.beforeRestore)
                     this.pluginOptions.beforeRestore(key, value);
                 if (option.beforeRestore)
                     option.beforeRestore(key, value);
-                option.restore(key, value);
+                option.restore.bind(this)(key, value);
                 if (option.afterRestore)
                     option.afterRestore(key, value);
                 if (this.pluginOptions.afterRestore)
                     this.pluginOptions.afterRestore(key, value);
             }
-        }
-        getDefaultOption(item) {
-            // Convert string to AnchorOption.
-            let option;
-            if (typeof item === 'string') {
-                option = {
-                    key: item,
-                };
-            }
-            else {
-                option = item;
-            }
-            // Complete default value.
-            if (!option.defaults)
-                option.defaults = this.getValue(option.key);
-            if (!option.name)
-                option.name = option.key;
-            if (!option.restore)
-                option.restore = this.setValue;
-            return option;
         }
         pack(value) {
             const typeofValue = typeof value;
@@ -145,12 +125,15 @@
             }
         }
         unpack(packValue) {
+            if (packValue === undefined) {
+                return undefined;
+            }
             if (typeof packValue !== 'string') {
                 if (packValue[0]) {
                     packValue = packValue[0];
                 }
                 else {
-                    throw ('[vue-data-anchor]: Could not restore value correctly. The url may have changed.');
+                    throw ('[vue-data-anchor]: Could not restore value correctly.');
                 }
             }
             const typeofValue = packValue[0];
@@ -175,6 +158,26 @@
                 default:
                     throw ('[vue-data-anchor]: Could not restore value correctly. The url may have changed.');
             }
+        }
+        getDefaultOption(item) {
+            // Convert string to AnchorOption.
+            let option;
+            if (typeof item === 'string') {
+                option = {
+                    key: item,
+                };
+            }
+            else {
+                option = item;
+            }
+            // Complete default value.
+            if (!option.defaults)
+                option.defaults = this.getValue(option.key);
+            if (!option.name)
+                option.name = option.key;
+            if (!option.restore)
+                option.restore = this.setValue;
+            return option;
         }
         /** Get value from vue's data. */
         getValue(key) {
