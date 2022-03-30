@@ -126,6 +126,39 @@ describe('update', () => {
         expect(anchor.unpack(wrapper.vm.$route.query['params'])).toEqual({ pageNum: 3 });
     });
 
+    it('When the `key` value is the same as the default value, delete the `$route.query[key]`', async() => {
+        const app = {
+            template: '<div></div>',
+            data() {
+                return {
+                    name: 'anchor',
+                    count: 1,
+                    big: BigInt(12345678987654321),
+                    flag: false,
+                    dynamic: 'dynamic',
+                };
+            },
+            anchor: ['name', 'count', 'big', 'flag', 'dynamic'],
+        };
+        const router = new VueRouter({ routes: [{ path: '/', component: app }] });
+        const wrapper = mount(app, {
+            localVue,
+            router,
+        });
+        const anchor = new Anchor(wrapper.vm);
+        wrapper.vm.$anchor = anchor;
+
+        // change string value
+        wrapper.vm.$data.name = 'change';
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query.name)).toBe('change');
+
+        // change string value to default
+        wrapper.vm.$data.name = 'anchor';
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query.name)).toBeUndefined();
+    });
+
     it('When unregister `key` value, unbind the value.', async() => {
         const app = {
             template: '<div></div>',
@@ -169,5 +202,23 @@ describe('update', () => {
         wrapper.vm.$data.count = 3;
         await wrapper.vm.$nextTick();
         expect(anchor.unpack(wrapper.vm.$route.query.count)).toBe(3);
+    });
+
+    it('Binding the symbol value should throw an error.', async() => {
+        const app = {
+            template: '<div></div>',
+            data() {
+                return {
+                    sym: Symbol('sym'),
+                };
+            },
+            anchor: ['sym'],
+        };
+        const router = new VueRouter({ routes: [{ path: '/', component: app }] });
+        const wrapper = mount(app, {
+            localVue,
+            router,
+        });
+        expect(() => new Anchor(wrapper.vm)).toThrow();
     });
 });
