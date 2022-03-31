@@ -46,9 +46,6 @@ class Anchor {
         // When the value has not changed, return directly.
         if (packValue === oldPackValue) return;
 
-        if (this.pluginOptions.beforeUpdate) this.pluginOptions.beforeUpdate(key, this.unpack(oldPackValue));
-        if (option.beforeUpdate) option.beforeUpdate(key, this.unpack(oldPackValue));
-
         // If mode is true, update the value.
         // If mode is false, clear the value.
         // If mode is null, return directly.
@@ -65,23 +62,37 @@ class Anchor {
         // Update the corresponding part of the url based on the value of the key.
         const defaults = this.pack(typeof option.defaults === 'function' ? option.defaults(key) : option.defaults);
         if (mode && packValue !== defaults) {
+            // beforeUpdate
+            if (this.pluginOptions.beforeUpdate) this.pluginOptions.beforeUpdate(key, this.unpack(oldPackValue));
+            if (option.beforeUpdate) option.beforeUpdate(key, this.unpack(oldPackValue));
+
+            // update
             const query = Object.assign(Object.assign({}, this.vm.$route.query), {
                 [option.name as string]: packValue,
             });
             this.vm.$router.replace({
                 query: query,
             });
+
+            // afterUpdate
+            if (mode && option.afterUpdate) option.afterUpdate(key, value);
+            if (mode && this.pluginOptions.afterUpdate) this.pluginOptions.afterUpdate(key, value);
         } else if (!mode || (packValue === defaults && oldPackValue)) {
+            // beforeUpdate
+            if (this.pluginOptions.beforeUpdate) this.pluginOptions.beforeUpdate(key, this.unpack(oldPackValue));
+            if (option.beforeUpdate) option.beforeUpdate(key, this.unpack(oldPackValue));
+
             // When the value of key is the same as the default value, delete the corresponding part of the url.
             const query = Object.assign({}, this.vm.$route.query);
             delete query[option.name as string];
             this.vm.$router.replace({
                 query: query,
             });
-        }
 
-        if (mode && option.afterUpdate) option.afterUpdate(key, value);
-        if (mode && this.pluginOptions.afterUpdate) this.pluginOptions.afterUpdate(key, value);
+            // afterUpdate
+            if (mode && option.afterUpdate) option.afterUpdate(key, value);
+            if (mode && this.pluginOptions.afterUpdate) this.pluginOptions.afterUpdate(key, value);
+        }
     }
 
     public restore(key: string): void {
