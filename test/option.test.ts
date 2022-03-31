@@ -233,3 +233,140 @@ describe('AnchorOption', () => {
         expect(target).toBe('new');
     });
 });
+
+describe('PluginOptions', () => {
+    it('Golbal lifecycle', async() => {
+        let stage: 'none' | 'beforeUpdate' | 'afterUpdate' | 'beforeRestore' | 'afterRestore' = 'none';
+        const app = {
+            template: '<div></div>',
+            data() {
+                return {
+                    key: 'old',
+                };
+            },
+            anchor: ['key'],
+        };
+        const router = new VueRouter({ routes: [{ path: '/', component: app }] });
+        const wrapper = mount(app, {
+            localVue,
+            router,
+        });
+        const anchor = new Anchor(wrapper.vm, {
+            beforeUpdate: (key: string, value: any) => {
+                expect(key).toBe('key');
+                expect(value).toBeUndefined();
+                expect(stage).toBe('none');
+                expect(wrapper.vm.$data.name).toBe('new');
+                expect(wrapper.vm.$route.query.name).toBeUndefined();
+                stage = 'beforeUpdate';
+            },
+            afterUpdate: (key: string, value: any) => {
+                expect(key).toBe('key');
+                expect(value).toBe('new');
+                expect(stage).toBe('beforeUpdate');
+                expect(wrapper.vm.$data.name).toBe('new');
+                expect(anchor.unpack(wrapper.vm.$route.query.name)).toBe('new');
+                stage = 'afterUpdate';
+            },
+            beforeRestore: (key: string, value: any) => {
+                expect(key).toBe('key');
+                expect(value).toBe('new');
+                expect(stage).toBe('afterUpdate');
+                expect(wrapper.vm.$data.name).toBe('new');
+                expect(anchor.unpack(wrapper.vm.$route.query.name)).toBe('new');
+                stage = 'beforeRestore';
+            },
+            afterRestore: (key: string, value: any) => {
+                expect(key).toBe('key');
+                expect(value).toBe('new');
+                expect(stage).toBe('beforeRestore');
+                expect(wrapper.vm.$data.name).toBe('new');
+                expect(anchor.unpack(wrapper.vm.$route.query.name)).toBe('new');
+                stage = 'afterRestore';
+            },
+        });
+        wrapper.vm.$anchor = anchor;
+
+        expect(stage).toBe('none');
+
+        wrapper.vm.$data.name = 'new';
+    });
+
+    it('Global updateCheck', async() => {
+        let mode: null | boolean = true;
+        let expected: string = 'old';
+        const app = {
+            template: '<div></div>',
+            data() {
+                return {
+                    name: 'old',
+                };
+            },
+            anchor: ['name'],
+        };
+        const router = new VueRouter({ routes: [{ path: '/', component: app }] });
+        const wrapper = mount(app, {
+            localVue,
+            router,
+        });
+        const anchor = new Anchor(wrapper.vm, {
+            updateCheck: (key: string, value: any) => {
+                expect(key).toBe('name');
+                expect(value).toBe(expected);
+                return mode;
+            },
+        });
+        wrapper.vm.$anchor = anchor;
+
+        // When updateCheck return true
+        mode = true;
+        wrapper.vm.$data.name = 'new1';
+        expected = 'new1';
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query.name)).toBe('new1');
+
+        // When updateCheck return null
+        mode = null;
+        wrapper.vm.$data.name = 'new2';
+        expected = 'new2';
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query.name)).toBe('new1');
+
+        // When updateCheck return false
+        mode = false;
+        wrapper.vm.$data.name = 'new3';
+        expected = 'new3';
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query.name)).toBeUndefined();
+    });
+
+    it('Global restore', async() => {
+        let target = 'old';
+        const app = {
+            template: '<div></div>',
+            data() {
+                return {
+                    name: 'old',
+                };
+            },
+            anchor: ['name'],
+        };
+        const router = new VueRouter({ routes: [{ path: '/', component: app }] });
+        const wrapper = mount(app, {
+            localVue,
+            router,
+        });
+        const anchor = new Anchor(wrapper.vm, {
+            restore: (key: string, value: any) => {
+                expect(key).toBe('name');
+                target = value;
+            },
+        });
+        wrapper.vm.$anchor = anchor;
+
+        wrapper.vm.$router.replace({ query: { name: 'snew' }});
+        await wrapper.vm.$nextTick();
+        expect(wrapper.vm.$data.name).toBe('old');
+        expect(target).toBe('new');
+    });
+});
