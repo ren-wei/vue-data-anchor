@@ -181,7 +181,7 @@ class Anchor {
         // Complete default value.
         if (!option.defaults) option.defaults = this.getValue(option.key);
         if (!option.name) option.name = option.key;
-        if (!option.restore) option.restore = this.setValue;
+        if (!option.restore) option.restore = this.pluginOptions.restore?.bind(this) || this.setValue;
         return option;
     }
 

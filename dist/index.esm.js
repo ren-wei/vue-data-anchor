@@ -183,7 +183,7 @@ class Anchor {
         if (!option.name)
             option.name = option.key;
         if (!option.restore)
-            option.restore = this.setValue;
+            option.restore = this.pluginOptions.restore?.bind(this) || this.setValue;
         return option;
     }
     /** Get value from vue's data. */
