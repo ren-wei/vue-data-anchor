@@ -1,4 +1,4 @@
-import { shallowMount, mount, createLocalVue } from '@vue/test-utils';
+import { mount, createLocalVue } from '@vue/test-utils';
 import { describe, it, expect } from '@jest/globals';
 // Why is VueRouter undefined?
 // import VueRouter from 'vue-router';
