@@ -26,10 +26,11 @@ describe('update', () => {
                     count: 1,
                     big: BigInt(12345678987654321),
                     flag: false,
+                    status: true,
                     dynamic: 'dynamic',
                 };
             },
-            anchor: ['name', 'count', 'big', 'flag', 'dynamic'],
+            anchor: ['name', 'count', 'big', 'flag', 'status', 'dynamic'],
         };
         const router = new VueRouter({ routes: [{ path: '/', component: app }] });
         const wrapper = mount(app, {
@@ -55,10 +56,15 @@ describe('update', () => {
         await wrapper.vm.$nextTick();
         expect(anchor.unpack(wrapper.vm.$route.query.big)).toEqual(value);
 
-        // change boolean value
+        // change false value
         wrapper.vm.$data.flag = true;
         await wrapper.vm.$nextTick();
         expect(anchor.unpack(wrapper.vm.$route.query.flag)).toBeTruthy();
+
+        // change true value
+        wrapper.vm.$data.status = false;
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query.status)).toBeFalsy();
 
         // change to undefined value
         wrapper.vm.$data.dynamic = undefined;

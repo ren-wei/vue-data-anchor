@@ -198,6 +198,20 @@ describe('AnchorOption', () => {
         expected = 'new3';
         await wrapper.vm.$nextTick();
         expect(anchor.unpack(wrapper.vm.$route.query.name)).toBeUndefined();
+
+        // When updateCheck return false again
+        mode = false;
+        wrapper.vm.$data.name = 'new4';
+        expected = 'new4';
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query.name)).toBeUndefined();
+
+        // When updateCheck return true again
+        mode = true;
+        wrapper.vm.$data.name = 'old';
+        expected = 'old';
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query.name)).toBeUndefined();
     });
 
     it('AnchorOption restore', async() => {
