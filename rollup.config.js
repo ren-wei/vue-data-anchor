@@ -1,5 +1,6 @@
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
+import { terser } from 'rollup-plugin-terser';
 import packageJSON from './package.json';
 
 const commonConfig = {
@@ -11,6 +12,11 @@ const outputList = [
     {
         file: packageJSON.main,
         format: 'umd',
+    },
+    {
+        file: packageJSON.main.slice(0, packageJSON.main.lastIndexOf('.js')) + '.min.js',
+        format: 'umd',
+        plugins: [terser()],
     },
     {
         file: packageJSON.module,
