@@ -59,39 +59,47 @@ class Anchor {
             if (mode === null) return;
         }
 
-        // Update the corresponding part of the url based on the value of the key.
-        const defaults = this.pack(typeof option.defaults === 'function' ? option.defaults(key) : option.defaults);
-        if (mode && packValue !== defaults) {
-            // beforeUpdate
-            if (this.pluginOptions.beforeUpdate) this.pluginOptions.beforeUpdate(key, this.unpack(oldPackValue));
-            if (option.beforeUpdate) option.beforeUpdate(key, this.unpack(oldPackValue));
+        if (mode) {
+            // Update the corresponding part of the url based on the value of the key.
+            const defaults = this.pack(typeof option.defaults === 'function' ? option.defaults(key) : option.defaults);
+            if (packValue !== defaults) {
+                // beforeUpdate
+                if (this.pluginOptions.beforeUpdate) this.pluginOptions.beforeUpdate(key, this.unpack(oldPackValue));
+                if (option.beforeUpdate) option.beforeUpdate(key, this.unpack(oldPackValue));
 
-            // update
-            const query = Object.assign(Object.assign({}, this.vm.$route.query), {
-                [option.name as string]: packValue,
-            });
-            this.vm.$router.replace({
-                query: query,
-            });
+                // update
+                const query = Object.assign(Object.assign({}, this.vm.$route.query), {
+                    [option.name as string]: packValue,
+                });
+                this.vm.$router.replace({
+                    query: query,
+                });
 
-            // afterUpdate
-            if (mode && option.afterUpdate) option.afterUpdate(key, value);
-            if (mode && this.pluginOptions.afterUpdate) this.pluginOptions.afterUpdate(key, value);
-        } else if (!mode || (packValue === defaults && oldPackValue)) {
-            // beforeUpdate
-            if (this.pluginOptions.beforeUpdate) this.pluginOptions.beforeUpdate(key, this.unpack(oldPackValue));
-            if (option.beforeUpdate) option.beforeUpdate(key, this.unpack(oldPackValue));
+                // afterUpdate
+                if (option.afterUpdate) option.afterUpdate(key, value);
+                if (this.pluginOptions.afterUpdate) this.pluginOptions.afterUpdate(key, value);
+            } else if (oldPackValue) {
+                // beforeUpdate
+                if (this.pluginOptions.beforeUpdate) this.pluginOptions.beforeUpdate(key, this.unpack(oldPackValue));
+                if (option.beforeUpdate) option.beforeUpdate(key, this.unpack(oldPackValue));
 
-            // When the value of key is the same as the default value, delete the corresponding part of the url.
+                // When the value of key is the same as the default value, delete the corresponding part of the url.
+                const query = Object.assign({}, this.vm.$route.query);
+                delete query[option.name as string];
+                this.vm.$router.replace({
+                    query: query,
+                });
+
+                // afterUpdate
+                if (option.afterUpdate) option.afterUpdate(key, value);
+                if (this.pluginOptions.afterUpdate) this.pluginOptions.afterUpdate(key, value);
+            }
+        } else if (oldPackValue) {
             const query = Object.assign({}, this.vm.$route.query);
             delete query[option.name as string];
             this.vm.$router.replace({
                 query: query,
             });
-
-            // afterUpdate
-            if (mode && option.afterUpdate) option.afterUpdate(key, value);
-            if (mode && this.pluginOptions.afterUpdate) this.pluginOptions.afterUpdate(key, value);
         }
     }
 
@@ -99,11 +107,11 @@ class Anchor {
         const option = this.options[key];
         const packValue = this.vm.$route.query[option.name as string];
 
-        if (packValue && option.restore) {
+        if (packValue) {
             const value = this.unpack(packValue);
             if (this.pluginOptions.beforeRestore) this.pluginOptions.beforeRestore(key, value);
             if (option.beforeRestore) option.beforeRestore(key, value);
-            option.restore.bind(this)(key, value);
+            option.restore?.bind(this)(key, value);
             if (option.afterRestore) option.afterRestore(key, value);
             if (this.pluginOptions.afterRestore) this.pluginOptions.afterRestore(key, value);
         }
