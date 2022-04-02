@@ -58,10 +58,8 @@ class Anchor {
             const defaults = this.pack(typeof option.defaults === 'function' ? option.defaults.call(this.vm, key) : option.defaults);
             if (packValue !== defaults) {
                 // beforeUpdate
-                if (this.pluginOptions.beforeUpdate)
-                    this.pluginOptions.beforeUpdate.call(this.vm, key, this.unpack(oldPackValue));
-                if (option.beforeUpdate)
-                    option.beforeUpdate.call(this.vm, key, this.unpack(oldPackValue));
+                this.pluginOptions.beforeUpdate && this.pluginOptions.beforeUpdate.call(this.vm, key, this.unpack(oldPackValue));
+                option.beforeUpdate && option.beforeUpdate.call(this.vm, key, this.unpack(oldPackValue));
                 // update
                 const query = Object.assign(Object.assign({}, this.vm.$route.query), {
                     [option.name]: packValue,
@@ -70,17 +68,13 @@ class Anchor {
                     query: query,
                 });
                 // afterUpdate
-                if (option.afterUpdate)
-                    option.afterUpdate.call(this.vm, key, value);
-                if (this.pluginOptions.afterUpdate)
-                    this.pluginOptions.afterUpdate.call(this.vm, key, value);
+                option.afterUpdate && option.afterUpdate.call(this.vm, key, value);
+                this.pluginOptions.afterUpdate && this.pluginOptions.afterUpdate.call(this.vm, key, value);
             }
             else if (oldPackValue) {
                 // beforeUpdate
-                if (this.pluginOptions.beforeUpdate)
-                    this.pluginOptions.beforeUpdate.call(this.vm, key, this.unpack(oldPackValue));
-                if (option.beforeUpdate)
-                    option.beforeUpdate.call(this.vm, key, this.unpack(oldPackValue));
+                this.pluginOptions.beforeUpdate && this.pluginOptions.beforeUpdate.call(this.vm, key, this.unpack(oldPackValue));
+                option.beforeUpdate && option.beforeUpdate.call(this.vm, key, this.unpack(oldPackValue));
                 // When the value of key is the same as the default value, delete the corresponding part of the url.
                 const query = Object.assign({}, this.vm.$route.query);
                 delete query[option.name];
@@ -88,10 +82,8 @@ class Anchor {
                     query: query,
                 });
                 // afterUpdate
-                if (option.afterUpdate)
-                    option.afterUpdate.call(this.vm, key, value);
-                if (this.pluginOptions.afterUpdate)
-                    this.pluginOptions.afterUpdate.call(this.vm, key, value);
+                option.afterUpdate && option.afterUpdate.call(this.vm, key, value);
+                this.pluginOptions.afterUpdate && this.pluginOptions.afterUpdate.call(this.vm, key, value);
             }
         }
         else if (oldPackValue) {
@@ -107,15 +99,11 @@ class Anchor {
         const packValue = this.vm.$route.query[option.name];
         if (packValue) {
             const value = this.unpack(packValue);
-            if (this.pluginOptions.beforeRestore)
-                this.pluginOptions.beforeRestore.call(this.vm, key, value);
-            if (option.beforeRestore)
-                option.beforeRestore.call(this.vm, key, value);
-            option.restore?.call(this.vm, key, value);
-            if (option.afterRestore)
-                option.afterRestore.call(this.vm, key, value);
-            if (this.pluginOptions.afterRestore)
-                this.pluginOptions.afterRestore.call(this.vm, key, value);
+            this.pluginOptions.beforeRestore && this.pluginOptions.beforeRestore.call(this.vm, key, value);
+            option.beforeRestore && option.beforeRestore.call(this.vm, key, value);
+            option.restore && option.restore.call(this.vm, key, value);
+            option.afterRestore && option.afterRestore.call(this.vm, key, value);
+            this.pluginOptions.afterRestore && this.pluginOptions.afterRestore.call(this.vm, key, value);
         }
     }
     pack(value) {

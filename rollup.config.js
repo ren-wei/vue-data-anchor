@@ -16,7 +16,7 @@ const outputList = [
     {
         file: packageJSON.main.slice(0, packageJSON.main.lastIndexOf('.js')) + '.min.js',
         format: 'umd',
-        plugins: [terser()],
+        plugins: [terser({ ecma: 5 })],
     },
     {
         file: packageJSON.module,
