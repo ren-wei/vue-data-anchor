@@ -165,6 +165,41 @@ describe('update', () => {
         expect(anchor.unpack(wrapper.vm.$route.query.name)).toBeUndefined();
     });
 
+    it('When the default value is a function, the function should be executed to get the default value.', async() => {
+        let flag = false;
+        const app = {
+            template: '<div></div>',
+            data() {
+                return {
+                    name: 'anchor',
+                };
+            },
+            anchor: [{
+                key: 'name',
+                defaults(key: string) {
+                    expect(key).toBe('name');
+                    flag = true;
+                    return 'defaults';
+                },
+            }],
+        };
+        const router = new VueRouter({ routes: [{ path: '/', component: app }] });
+        const wrapper = mount(app, {
+            localVue,
+            router,
+        });
+        const anchor = new Anchor(wrapper.vm);
+        wrapper.vm.$anchor = anchor;
+
+        expect(flag).toBeTruthy();
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query.name)).toBe('anchor');
+
+        wrapper.vm.$data.name = 'defaults';
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query.name)).toBeUndefined();
+    });
+
     it('When unregister `key` value, unbind the value.', async() => {
         const app = {
             template: '<div></div>',
