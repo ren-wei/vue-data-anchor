@@ -56,15 +56,47 @@ export default {
 
 > *Note:* The key is the value of data, and the name will be used as the name of this.$route.query[name]. Reference to [AnchorOptions](https://github.com/ren-wei/vue-data-anchor/blob/master/types/index.d.ts)
 
-### More features
+### Defaults
 
-* Manual register: `this.$anchor.register(anchorOptions: AnchorOptions = []): void;`
+When state is default, value is not added to $route.query.
 
-* Unregister: `this.$anchor.unregister(key: string): boolean;`
+The default value is usually equal to the value at registration.
 
-* Manual update: `this.$anchor.update(key: string): void;`
+It can be configured using `defaults`.
 
-* Manual restore: `this.$anchor.restore(key: string): void;`
+For example:
+
+```html
+<template>
+    <div>content</div>
+</template>
+<script>
+export default {
+    data() {
+        return {
+            name: 'anchor',
+            count: 1,
+            params: {
+                pageNum: 1
+            }
+        };
+    },
+    anchor: [{ key: 'count', defaults: 2 }]
+};
+</script>
+```
+
+> *Note:* When refreshing, if the specified key does not exist in $route.query, even if the current value is not equal to the default value, it will not be restored to the default value.
+
+## API
+
+* `this.$anchor.register(anchorOptions: AnchorOptions = []): void;`
+
+* `this.$anchor.unregister(key: string): boolean;`
+
+* `this.$anchor.update(key: string): void;`
+
+* `this.$anchor.restore(key: string): void;`
 
 ## Development
 
