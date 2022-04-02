@@ -53,20 +53,20 @@ class Anchor {
         let mode: boolean | null = true;
 
         if (option.updateCheck) {
-            mode = option.updateCheck(key, value);
+            mode = option.updateCheck.call(this.vm, key, value);
             if (mode === null) return;
         } else if (this.pluginOptions.updateCheck) {
-            mode = this.pluginOptions.updateCheck(key, value);
+            mode = this.pluginOptions.updateCheck.call(this.vm, key, value);
             if (mode === null) return;
         }
 
         if (mode) {
             // Update the corresponding part of the url based on the value of the key.
-            const defaults = this.pack(typeof option.defaults === 'function' ? option.defaults(key) : option.defaults);
+            const defaults = this.pack(typeof option.defaults === 'function' ? option.defaults.call(this.vm, key) : option.defaults);
             if (packValue !== defaults) {
                 // beforeUpdate
-                if (this.pluginOptions.beforeUpdate) this.pluginOptions.beforeUpdate(key, this.unpack(oldPackValue));
-                if (option.beforeUpdate) option.beforeUpdate(key, this.unpack(oldPackValue));
+                if (this.pluginOptions.beforeUpdate) this.pluginOptions.beforeUpdate.call(this.vm, key, this.unpack(oldPackValue));
+                if (option.beforeUpdate) option.beforeUpdate.call(this.vm, key, this.unpack(oldPackValue));
 
                 // update
                 const query = Object.assign(Object.assign({}, this.vm.$route.query), {
@@ -77,12 +77,12 @@ class Anchor {
                 });
 
                 // afterUpdate
-                if (option.afterUpdate) option.afterUpdate(key, value);
-                if (this.pluginOptions.afterUpdate) this.pluginOptions.afterUpdate(key, value);
+                if (option.afterUpdate) option.afterUpdate.call(this.vm, key, value);
+                if (this.pluginOptions.afterUpdate) this.pluginOptions.afterUpdate.call(this.vm, key, value);
             } else if (oldPackValue) {
                 // beforeUpdate
-                if (this.pluginOptions.beforeUpdate) this.pluginOptions.beforeUpdate(key, this.unpack(oldPackValue));
-                if (option.beforeUpdate) option.beforeUpdate(key, this.unpack(oldPackValue));
+                if (this.pluginOptions.beforeUpdate) this.pluginOptions.beforeUpdate.call(this.vm, key, this.unpack(oldPackValue));
+                if (option.beforeUpdate) option.beforeUpdate.call(this.vm, key, this.unpack(oldPackValue));
 
                 // When the value of key is the same as the default value, delete the corresponding part of the url.
                 const query = Object.assign({}, this.vm.$route.query);
@@ -92,8 +92,8 @@ class Anchor {
                 });
 
                 // afterUpdate
-                if (option.afterUpdate) option.afterUpdate(key, value);
-                if (this.pluginOptions.afterUpdate) this.pluginOptions.afterUpdate(key, value);
+                if (option.afterUpdate) option.afterUpdate.call(this.vm, key, value);
+                if (this.pluginOptions.afterUpdate) this.pluginOptions.afterUpdate.call(this.vm, key, value);
             }
         } else if (oldPackValue) {
             const query = Object.assign({}, this.vm.$route.query);
@@ -110,11 +110,11 @@ class Anchor {
 
         if (packValue) {
             const value = this.unpack(packValue);
-            if (this.pluginOptions.beforeRestore) this.pluginOptions.beforeRestore(key, value);
-            if (option.beforeRestore) option.beforeRestore(key, value);
-            option.restore?.bind(this)(key, value);
-            if (option.afterRestore) option.afterRestore(key, value);
-            if (this.pluginOptions.afterRestore) this.pluginOptions.afterRestore(key, value);
+            if (this.pluginOptions.beforeRestore) this.pluginOptions.beforeRestore.call(this.vm, key, value);
+            if (option.beforeRestore) option.beforeRestore.call(this.vm, key, value);
+            option.restore?.call(this.vm, key, value);
+            if (option.afterRestore) option.afterRestore.call(this.vm, key, value);
+            if (this.pluginOptions.afterRestore) this.pluginOptions.afterRestore.call(this.vm, key, value);
         }
     }
 
@@ -190,7 +190,7 @@ class Anchor {
         // Complete default value.
         if (!option.defaults) option.defaults = this.getValue(option.key);
         if (!option.name) option.name = option.key;
-        if (!option.restore) option.restore = this.pluginOptions.restore?.bind(this) || this.setValue;
+        if (!option.restore) option.restore = this.pluginOptions.restore || this.setValue;
         return option;
     }
 
@@ -204,8 +204,8 @@ class Anchor {
     }
 
     /** Set Value to vue's data. */
-    private setValue(key: string, value: any) {
-        let current: any = this.vm.$data;
+    private setValue(this: Vue, key: string, value: any) {
+        let current: any = this.$data;
         let target: any;
         let targetKey = key;
         key.split('.').forEach(k => {
@@ -213,7 +213,7 @@ class Anchor {
             current = current[k];
             targetKey = k;
         });
-        this.vm.$set(target, targetKey, value);
+        this.$set(target, targetKey, value);
     }
 }
 

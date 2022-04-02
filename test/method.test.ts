@@ -1,5 +1,6 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import { describe, it, expect } from '@jest/globals';
+import { ComponentOptions } from 'vue';
 // Why is VueRouter undefined?
 // import VueRouter from 'vue-router';
 const VueRouter = require('vue-router');
@@ -8,7 +9,7 @@ import Anchor from '../src/anchor';
 const localVue = createLocalVue();
 localVue.use(VueRouter);
 
-const app = {
+const app: ComponentOptions<Vue> = {
     template: '<div></div>',
 };
 const router = new VueRouter({ routes: [{ path: '/', component: app }] });

@@ -1,5 +1,6 @@
 import { shallowMount, mount, createLocalVue } from '@vue/test-utils';
 import { describe, it, expect } from '@jest/globals';
+import { ComponentOptions } from 'vue';
 // Why is VueRouter undefined?
 // import VueRouter from 'vue-router';
 const VueRouter = require('vue-router');
@@ -18,7 +19,7 @@ describe('update', () => {
     });
 
     it('The changed the `key` value of a basic type should be bound to `$route.query[key]`.', async() => {
-        const app = {
+        const app: ComponentOptions<Vue> = {
             template: '<div></div>',
             data() {
                 return {
@@ -78,7 +79,7 @@ describe('update', () => {
     });
 
     it('The `key` value of the property of the changed object should be bound to `$route.query[key]`.', async() => {
-        const app = {
+        const app: ComponentOptions<Vue> = {
             template: '<div></div>',
             data() {
                 return {
@@ -103,7 +104,7 @@ describe('update', () => {
     });
 
     it('The `key` value of the object type should be bound to `$route.query[key]`.', async() => {
-        const app = {
+        const app: ComponentOptions<Vue> = {
             template: '<div></div>',
             data() {
                 return {
@@ -133,7 +134,7 @@ describe('update', () => {
     });
 
     it('When the `key` value is the same as the default value, delete the `$route.query[key]`', async() => {
-        const app = {
+        const app: ComponentOptions<Vue> = {
             template: '<div></div>',
             data() {
                 return {
@@ -167,7 +168,7 @@ describe('update', () => {
 
     it('When the default value is a function, the function should be executed to get the default value.', async() => {
         let flag = false;
-        const app = {
+        const app: ComponentOptions<Vue> = {
             template: '<div></div>',
             data() {
                 return {
@@ -178,6 +179,7 @@ describe('update', () => {
                 key: 'name',
                 defaults(key: string) {
                     expect(key).toBe('name');
+                    expect(this === wrapper.vm).toBeTruthy();
                     flag = true;
                     return 'defaults';
                 },
@@ -201,7 +203,7 @@ describe('update', () => {
     });
 
     it('When unregister `key` value, unbind the value.', async() => {
-        const app = {
+        const app: ComponentOptions<Vue> = {
             template: '<div></div>',
             data() {
                 return {
@@ -246,7 +248,7 @@ describe('update', () => {
     });
 
     it('Binding the symbol value should throw an error.', async() => {
-        const app = {
+        const app: ComponentOptions<Vue> = {
             template: '<div></div>',
             data() {
                 return {

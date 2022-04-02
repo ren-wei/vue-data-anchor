@@ -1,5 +1,6 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import { describe, it, expect } from '@jest/globals';
+import { ComponentOptions } from 'vue';
 // Why is VueRouter undefined?
 // import VueRouter from 'vue-router';
 const VueRouter = require('vue-router');
@@ -10,7 +11,7 @@ localVue.use(VueRouter);
 
 describe('restore', () => {
     it('Unconfigured options should not be reverted.', async() => {
-        const app = {
+        const app: ComponentOptions<Vue> = {
             template: '<div></div>',
             data() {
                 return {
@@ -39,7 +40,7 @@ describe('restore', () => {
     });
 
     it('Options that should restore the bound primitive type.', async() => {
-        const app = {
+        const app: ComponentOptions<Vue> = {
             template: '<div></div>',
             data() {
                 return {
@@ -79,7 +80,7 @@ describe('restore', () => {
     });
 
     it('Options that should restore the bound object type.', async() => {
-        const app = {
+        const app: ComponentOptions<Vue> = {
             template: '<div></div>',
             data() {
                 return {
@@ -108,7 +109,7 @@ describe('restore', () => {
     });
 
     it('When $route.query changes, the data should follow the change.', async() => {
-        const app = {
+        const app: ComponentOptions<Vue> = {
             template: '<div></div>',
             data() {
                 return {
@@ -157,7 +158,7 @@ describe('restore', () => {
     });
 
     it('When unregister `key` value, unbind the value.', async() => {
-        const app = {
+        const app: ComponentOptions<Vue> = {
             template: '<div></div>',
             data() {
                 return {
@@ -198,7 +199,7 @@ describe('restore', () => {
     });
 
     it('A value that cannot be restored should throw an error.', async() => {
-        const app = {
+        const app: ComponentOptions<Vue> = {
             template: '<div></div>',
             data() {
                 return {
