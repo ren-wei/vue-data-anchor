@@ -19,7 +19,11 @@
         "vue",
         "plugin",
         "route",
-        "router"
+        "router",
+        "vue-plugin",
+        "vue-router",
+        "vue-anchor",
+        "vue-data-anchor"
     ],
     "author": "ren-wei <demonre@foxmail.com>",
     "license": "MIT",
