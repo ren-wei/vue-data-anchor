@@ -19,6 +19,10 @@ const wrapper = mount(app, {
 const anchor = new Anchor(wrapper.vm);
 
 describe('method', () => {
+    it('update', async() => {
+        expect(() => anchor.update('update')).toThrow();
+    });
+
     it('unpack', async() => {
         expect(anchor.unpack('sa')).toBe('a');
         expect(anchor.unpack(['t'])).toBeTruthy();

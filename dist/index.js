@@ -37,6 +37,8 @@
         }
         update(key) {
             const option = this.options[key];
+            if (!option)
+                throw (`[vue-data-anchor]: The '${key} is not registered, please register first.`);
             const value = this.getValue(key);
             const packValue = this.pack(value);
             const oldPackValue = this.vm.$route.query[option.name];
