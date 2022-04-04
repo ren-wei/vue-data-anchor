@@ -87,60 +87,6 @@ describe('update', () => {
         if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 
-    it('The `key` value of the property of the changed object should be bound to `$route.query[key]`.', async() => {
-        const app: ComponentOptions<Vue> = {
-            template: '<div></div>',
-            data() {
-                return {
-                    params: {
-                        pageNum: 1,
-                    },
-                };
-            },
-            anchor: ['params.pageNum'],
-        };
-        const router = new VueRouter({ routes: [{ path: '/', component: app }] });
-        const wrapper = mount(app, {
-            localVue,
-            router,
-        });
-        const anchor = new Anchor(wrapper.vm);
-        wrapper.vm.$anchor = anchor;
-
-        wrapper.vm.$data.params.pageNum = 2;
-        await wrapper.vm.$nextTick();
-        expect(anchor.unpack(wrapper.vm.$route.query['pageNum'])).toBe(2);
-
-        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
-    });
-
-    it('The `key` value of an object type should bind its properties.', async() => {
-        const app: ComponentOptions<Vue> = {
-            template: '<div></div>',
-            data() {
-                return {
-                    params: {
-                        pageNum: 1,
-                    },
-                };
-            },
-            anchor: ['params'],
-        };
-        const router = new VueRouter({ routes: [{ path: '/', component: app }] });
-        const wrapper = mount(app, {
-            localVue,
-            router,
-        });
-        const anchor = new Anchor(wrapper.vm);
-        wrapper.vm.$anchor = anchor;
-
-        wrapper.vm.$data.params.pageNum = 2;
-        await wrapper.vm.$nextTick();
-        expect(anchor.unpack(wrapper.vm.$route.query['pageNum'])).toBe(2);
-
-        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
-    });
-
     it('When the `key` value is the same as the default value, delete the `$route.query[key]`', async() => {
         const app: ComponentOptions<Vue> = {
             template: '<div></div>',
