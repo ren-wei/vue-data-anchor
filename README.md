@@ -1,6 +1,6 @@
 # vue-data-anchor
 
-[![vue-data-anchor](https://img.shields.io/badge/VueDataAnchor-1.0-brightgreen.svg)](https://vuejs.org/) [![Vue2](https://img.shields.io/badge/Vue-2.x-brightgreen.svg)](https://vuejs.org/) [![VueRouter](https://img.shields.io/badge/VueRouter-3.x-brightgreen.svg)](https://vuejs.org/)
+[![vue-data-anchor](https://img.shields.io/badge/VueDataAnchor-1.1-brightgreen.svg)](https://github.com/ren-wei/vue-data-anchor) [![Vue2](https://img.shields.io/badge/Vue-2.x-brightgreen.svg)](https://vuejs.org/) [![VueRouter](https://img.shields.io/badge/VueRouter-3.x-brightgreen.svg)](https://router.vuejs.org/)
 
 Record the state of vue's data to the route. State is restored when refreshing or reloading elsewhere.
 
