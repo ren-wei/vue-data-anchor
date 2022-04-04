@@ -7,16 +7,16 @@ class Anchor {
         this.register(this.vm.$options.anchor);
     }
     register(anchorOptions = []) {
-        const options = anchorOptions.map(item => this.getDefaultOption(item));
-        // For each option, bind key to the corresponding part of the url.
+        const options = this.getRegisteredOptions(anchorOptions);
+        // For each option, bind key to $route.query.
         options.forEach((option) => {
             this.unregister(option.key);
             this.options[option.key] = option;
             this.restore(option.key);
             this.update(option.key);
             this.unWatchs[option.key] = [
-                this.vm.$watch(option.key, () => this.update(option.key), { deep: true }),
-                this.vm.$watch(`$route.query.${option.name}`, () => this.restore(option.key), { deep: true }),
+                this.vm.$watch(option.key, () => this.update(option.key)),
+                this.vm.$watch(`$route.query.${option.name}`, () => this.restore(option.key)),
             ];
         });
     }
@@ -42,19 +42,11 @@ class Anchor {
         // If mode is true, update the value.
         // If mode is false, clear the value.
         // If mode is null, return directly.
-        let mode = true;
-        if (option.updateCheck) {
-            mode = option.updateCheck.call(this.vm, key, value);
-            if (mode === null)
-                return;
-        }
-        else if (this.pluginOptions.updateCheck) {
-            mode = this.pluginOptions.updateCheck.call(this.vm, key, value);
-            if (mode === null)
-                return;
-        }
+        const mode = option.updateCheck.call(this.vm, key, value);
+        if (mode === null)
+            return;
         if (mode) {
-            // Update the corresponding part of the url based on the value of the key.
+            // Update $route.query based on the value of the key.
             const defaults = this.pack(typeof option.defaults === 'function' ? option.defaults.call(this.vm, key) : option.defaults);
             if (packValue !== defaults) {
                 const query = Object.assign(Object.assign({}, this.vm.$route.query), {
@@ -90,6 +82,8 @@ class Anchor {
         }
     }
     pack(value) {
+        if (value === null)
+            return 'u';
         const typeofValue = typeof value;
         switch (typeofValue) {
             case 'string':
@@ -102,21 +96,13 @@ class Anchor {
                 return value ? 't' : 'f';
             case 'undefined':
                 return '-';
-            case 'object':
-                if (value === null) {
-                    return 'u';
-                }
-                else {
-                    return '*' + encodeURI(JSON.stringify(value));
-                }
             default:
                 throw (`[vue-data-anchor]: The value of type "${typeofValue}" are not supported.`);
         }
     }
     unpack(packValue) {
-        if (packValue === undefined) {
+        if (packValue === undefined)
             return undefined;
-        }
         if (typeof packValue !== 'string') {
             if (packValue[0]) {
                 packValue = packValue[0];
@@ -142,31 +128,51 @@ class Anchor {
                 return undefined;
             case 'u':
                 return null;
-            case '*':
-                return JSON.parse(raw);
             default:
                 throw ('[vue-data-anchor]: Could not restore value correctly. The url may have changed.');
         }
     }
-    getDefaultOption(item) {
-        // Convert string to AnchorOption.
-        let option;
-        if (typeof item === 'string') {
-            option = {
-                key: item,
-            };
+    getRegisteredOptions(options) {
+        const result = [];
+        for (const item of options) {
+            const key = typeof item === 'string' ? item : item.key;
+            const value = this.getValue(key);
+            if (value !== null && typeof value === 'object') {
+                const keys = Object.keys(value).map(k => `${key}.${k}`);
+                // When the value is changed, re-register.
+                this.unWatchs[key] = [
+                    this.vm.$watch(key, () => {
+                        keys.forEach(k => this.unregister(k));
+                        this.register([key]);
+                    }),
+                ];
+                result.push(...this.getRegisteredOptions(keys));
+            }
+            else {
+                if (typeof item === 'string') {
+                    result.push({
+                        key,
+                        name: this.pluginOptions.rename ? this.pluginOptions.rename.call(this.vm, key) : key.slice(key.lastIndexOf('.') + 1),
+                        defaults: this.getValue(key),
+                        updateCheck: (this.pluginOptions.updateCheck || (() => true)).bind(this.vm),
+                        restore: (this.pluginOptions.restore || (this.setValue)).bind(this.vm),
+                    });
+                }
+                else {
+                    const name = item.name
+                        ? (typeof item.name === 'string' ? item.name : item.name.call(this.vm, key))
+                        : this.pluginOptions.rename ? this.pluginOptions.rename.call(this.vm, key) : key.slice(key.lastIndexOf('.') + 1);
+                    result.push({
+                        key,
+                        name,
+                        defaults: item.defaults || this.getValue(key),
+                        updateCheck: (item.updateCheck || this.pluginOptions.updateCheck || (() => true)).bind(this.vm),
+                        restore: (item.restore || this.pluginOptions.restore || (this.setValue)).bind(this.vm),
+                    });
+                }
+            }
         }
-        else {
-            option = item;
-        }
-        // Complete default value.
-        if (!option.defaults)
-            option.defaults = this.getValue(option.key);
-        if (!option.name)
-            option.name = option.key;
-        if (!option.restore)
-            option.restore = this.pluginOptions.restore || this.setValue;
-        return option;
+        return result;
     }
     /** Get value from vue's data. */
     getValue(key) {

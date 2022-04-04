@@ -37,6 +37,8 @@ describe('restore', () => {
         wrapper.vm.$anchor = anchor;
 
         expect(wrapper.vm.$data.name).toBe('anchor');
+
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 
     it('Options that should restore the bound primitive type.', async() => {
@@ -77,35 +79,8 @@ describe('restore', () => {
         expect(wrapper.vm.$data.big.toString()).toBe('1234567898765432');
         expect(wrapper.vm.$data.flag).toBeTruthy();
         expect(wrapper.vm.$data.dynamic).toBeNull();
-    });
 
-    it('Options that should restore the bound object type.', async() => {
-        const app: ComponentOptions<Vue> = {
-            template: '<div></div>',
-            data() {
-                return {
-                    params: {
-                        pageNum: 1,
-                    },
-                };
-            },
-            anchor: ['params'],
-        };
-        const router = new VueRouter({ routes: [{ path: '/', component: app }] });
-        const wrapper = mount(app, {
-            localVue,
-            router,
-        });
-
-        wrapper.vm.$router.replace({ query: {
-            params: '*' + JSON.stringify({ pageNum: 11 }),
-        }});
-        await wrapper.vm.$nextTick();
-
-        const anchor = new Anchor(wrapper.vm);
-        wrapper.vm.$anchor = anchor;
-
-        expect(wrapper.vm.$data.params).toEqual({ pageNum: 11 });
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 
     it('When $route.query changes, the data should follow the change.', async() => {
@@ -155,6 +130,8 @@ describe('restore', () => {
         wrapper.vm.$router.replace({ query: { dynamic: 'u' }});
         await wrapper.vm.$nextTick();
         expect(wrapper.vm.$data.dynamic).toBeNull();
+
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 
     it('When unregister `key` value, unbind the value.', async() => {
@@ -196,6 +173,8 @@ describe('restore', () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.vm.$data.name).toBe('changed-first');
         expect(wrapper.vm.$data.count).toBe(41);
+
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 
     it('A value that cannot be restored should throw an error.', async() => {
@@ -217,5 +196,7 @@ describe('restore', () => {
         wrapper.vm.$anchor = anchor;
 
         expect(() => anchor.unpack('change')).toThrowError();
+
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 });

@@ -51,6 +51,8 @@ describe('AnchorOption', () => {
         wrapper.vm.$router.replace({ query: { pageNum: '03' }});
         await wrapper.vm.$nextTick();
         expect(wrapper.vm.$data.params.pageNum).toBe(3);
+
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 
     it('AnchorOption defaults', async() => {
@@ -59,14 +61,10 @@ describe('AnchorOption', () => {
             data() {
                 return {
                     name: 'anchor',
-                    params: {
-                        pageNum: 1,
-                    },
                 };
             },
             anchor: [
                 { key: 'name', defaults: 'defaults' },
-                { key: 'params.pageNum', defaults: 2 },
             ],
         };
         const router = new VueRouter({ routes: [{ path: '/', component: app }] });
@@ -79,13 +77,12 @@ describe('AnchorOption', () => {
 
         await wrapper.vm.$nextTick();
         expect(anchor.unpack(wrapper.vm.$route.query.name)).toBe('anchor');
-        expect(anchor.unpack(wrapper.vm.$route.query['params.pageNum'])).toBe(1);
 
         wrapper.vm.$data.name = 'defaults';
-        wrapper.vm.$data.params.pageNum = 2;
         await wrapper.vm.$nextTick();
         expect(anchor.unpack(wrapper.vm.$route.query.name)).toBeUndefined();
-        expect(anchor.unpack(wrapper.vm.$route.query['params.pageNum'])).toBeUndefined();
+
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 
     it('AnchorOption updateCheck', async() => {
@@ -152,6 +149,8 @@ describe('AnchorOption', () => {
         expected = 'old';
         await wrapper.vm.$nextTick();
         expect(anchor.unpack(wrapper.vm.$route.query.name)).toBeUndefined();
+
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 
     it('AnchorOption restore', async() => {
@@ -186,10 +185,44 @@ describe('AnchorOption', () => {
         await wrapper.vm.$nextTick();
         expect(wrapper.vm.$data.name).toBe('old');
         expect(target).toBe('new');
+
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 });
 
 describe('PluginOptions', () => {
+    it('Global rename', async() => {
+        const app: ComponentOptions<Vue> = {
+            template: '<div></div>',
+            data() {
+                return {
+                    params: {
+                        pageNum: 1,
+                    },
+                };
+            },
+            anchor: ['params'],
+        };
+        const router = new VueRouter({ routes: [{ path: '/', component: app }] });
+        const wrapper = mount(app, {
+            localVue,
+            router,
+        });
+        const anchor = new Anchor(wrapper.vm, {
+            rename(key: string) {
+                expect(key).toBe('params.pageNum');
+                return 'num';
+            },
+        });
+        wrapper.vm.$anchor = anchor;
+
+        wrapper.vm.$data.params.pageNum = 2;
+        await wrapper.vm.$nextTick();
+        expect(anchor.unpack(wrapper.vm.$route.query['num'])).toBe(2);
+
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
+    });
+
     it('Global updateCheck', async() => {
         let mode: null | boolean = true;
         let expected: string = 'old';
@@ -237,6 +270,8 @@ describe('PluginOptions', () => {
         expected = 'new3';
         await wrapper.vm.$nextTick();
         expect(anchor.unpack(wrapper.vm.$route.query.name)).toBeUndefined();
+
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 
     it('Global restore', async() => {
@@ -265,7 +300,9 @@ describe('PluginOptions', () => {
 
         wrapper.vm.$router.replace({ query: { name: 'snew' }});
         await wrapper.vm.$nextTick();
-        expect(wrapper.vm.$data.name).toBe('old');
         expect(target).toBe('new');
+        expect(wrapper.vm.$data.name).toBe('old');
+
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 });

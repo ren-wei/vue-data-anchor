@@ -11,11 +11,18 @@ localVue.use(VueRouter);
 
 describe('update', () => {
     it('Empty options should be generated before registration.', () => {
-        const wrapper = shallowMount({
+        const app: ComponentOptions<Vue> = {
             template: '<div></div>',
+        };
+        const router = new VueRouter({ routes: [{ path: '/', component: app }] });
+        const wrapper = mount(app, {
+            localVue,
+            router,
         });
         const anchor = new Anchor(wrapper.vm);
         expect(Object.keys(anchor.options).length).toBe(0);
+
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 
     it('The changed the `key` value of a basic type should be bound to `$route.query[key]`.', async() => {
@@ -31,7 +38,7 @@ describe('update', () => {
                     dynamic: 'dynamic',
                 };
             },
-            anchor: ['name', 'count', 'big', 'flag', 'status', 'dynamic'],
+            anchor: ['name', 'count', 'big', 'flag', 'status', 'empty', 'dynamic'],
         };
         const router = new VueRouter({ routes: [{ path: '/', component: app }] });
         const wrapper = mount(app, {
@@ -76,6 +83,8 @@ describe('update', () => {
         wrapper.vm.$data.dynamic = null;
         await wrapper.vm.$nextTick();
         expect(anchor.unpack(wrapper.vm.$route.query.dynamic)).toBeNull();
+
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 
     it('The `key` value of the property of the changed object should be bound to `$route.query[key]`.', async() => {
@@ -100,10 +109,12 @@ describe('update', () => {
 
         wrapper.vm.$data.params.pageNum = 2;
         await wrapper.vm.$nextTick();
-        expect(anchor.unpack(wrapper.vm.$route.query['params.pageNum'])).toBe(2);
+        expect(anchor.unpack(wrapper.vm.$route.query['pageNum'])).toBe(2);
+
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 
-    it('The `key` value of the object type should be bound to `$route.query[key]`.', async() => {
+    it('The `key` value of an object type should bind its properties.', async() => {
         const app: ComponentOptions<Vue> = {
             template: '<div></div>',
             data() {
@@ -122,15 +133,12 @@ describe('update', () => {
         });
         const anchor = new Anchor(wrapper.vm);
         wrapper.vm.$anchor = anchor;
-        anchor.unregister('params.pageNum'); // Clean up the impact of other test cases.
 
-        wrapper.vm.$data.params = { pageNum: 2 };
+        wrapper.vm.$data.params.pageNum = 2;
         await wrapper.vm.$nextTick();
-        expect(anchor.unpack(wrapper.vm.$route.query['params'])).toEqual({ pageNum: 2 });
+        expect(anchor.unpack(wrapper.vm.$route.query['pageNum'])).toBe(2);
 
-        wrapper.vm.$data.params.pageNum = 3;
-        await wrapper.vm.$nextTick();
-        expect(anchor.unpack(wrapper.vm.$route.query['params'])).toEqual({ pageNum: 3 });
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 
     it('When the `key` value is the same as the default value, delete the `$route.query[key]`', async() => {
@@ -164,6 +172,8 @@ describe('update', () => {
         wrapper.vm.$data.name = 'anchor';
         await wrapper.vm.$nextTick();
         expect(anchor.unpack(wrapper.vm.$route.query.name)).toBeUndefined();
+
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 
     it('When the default value is a function, the function should be executed to get the default value.', async() => {
@@ -200,6 +210,8 @@ describe('update', () => {
         wrapper.vm.$data.name = 'defaults';
         await wrapper.vm.$nextTick();
         expect(anchor.unpack(wrapper.vm.$route.query.name)).toBeUndefined();
+
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 
     it('When unregister `key` value, unbind the value.', async() => {
@@ -245,6 +257,8 @@ describe('update', () => {
         wrapper.vm.$data.count = 3;
         await wrapper.vm.$nextTick();
         expect(anchor.unpack(wrapper.vm.$route.query.count)).toBe(3);
+
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 
     it('Binding the symbol value should throw an error.', async() => {
@@ -263,5 +277,7 @@ describe('update', () => {
             router,
         });
         expect(() => new Anchor(wrapper.vm)).toThrow();
+
+        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 });
