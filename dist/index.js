@@ -145,12 +145,13 @@
                 const value = this.getValue(key);
                 if (value !== null && typeof value === 'object') {
                     const keys = Object.keys(value).map(k => `${key}.${k}`);
-                    // When the value is changed, re-register.
                     this.unWatchs[key] = [
+                        // When the value is changed, re-register.
                         this.vm.$watch(key, () => {
                             keys.forEach(k => this.unregister(k));
                             this.register([key]);
                         }),
+                        () => keys.forEach(k => this.unregister(k)),
                     ];
                     result.push(...this.getRegisteredOptions(keys));
                 }
