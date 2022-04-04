@@ -88,68 +88,6 @@ describe('AnchorOption', () => {
         expect(anchor.unpack(wrapper.vm.$route.query['params.pageNum'])).toBeUndefined();
     });
 
-    it('AnchorOption lifecycle', async() => {
-        let stage: 'none' | 'beforeUpdate' | 'afterUpdate' | 'beforeRestore' | 'afterRestore' = 'none';
-        const app: ComponentOptions<Vue> = {
-            template: '<div></div>',
-            data() {
-                return {
-                    name: 'old',
-                };
-            },
-            anchor: [
-                {
-                    key: 'name',
-                    beforeUpdate(key: string, value: any) {
-                        expect(key).toBe('name');
-                        expect(value).toBeUndefined();
-                        expect(stage).toBe('none');
-                        expect(this.$data.name).toBe('new');
-                        expect(this.$route.query.name).toBeUndefined();
-                        stage = 'beforeUpdate';
-                    },
-                    afterUpdate(key: string, value: any) {
-                        expect(key).toBe('name');
-                        expect(value).toBe('new');
-                        expect(stage).toBe('beforeUpdate');
-                        expect(this.$data.name).toBe('new');
-                        expect(anchor.unpack(this.$route.query.name)).toBe('new');
-                        stage = 'afterUpdate';
-                    },
-                    beforeRestore(key: string, value: any) {
-                        expect(key).toBe('name');
-                        expect(value).toBe('new');
-                        expect(stage).toBe('afterUpdate');
-                        expect(this.$data.name).toBe('new');
-                        expect(anchor.unpack(this.$route.query.name)).toBe('new');
-                        stage = 'beforeRestore';
-                    },
-                    afterRestore(key: string, value: any) {
-                        expect(key).toBe('name');
-                        expect(value).toBe('new');
-                        expect(stage).toBe('beforeRestore');
-                        expect(this.$data.name).toBe('new');
-                        expect(anchor.unpack(this.$route.query.name)).toBe('new');
-                        stage = 'afterRestore';
-                    },
-                },
-            ],
-        };
-        const router = new VueRouter({ routes: [{ path: '/', component: app }] });
-        const wrapper = mount(app, {
-            localVue,
-            router,
-        });
-        const anchor = new Anchor(wrapper.vm);
-        wrapper.vm.$anchor = anchor;
-
-        expect(stage).toBe('none');
-
-        wrapper.vm.$data.name = 'new';
-        await wrapper.vm.$nextTick();
-        expect(stage).toBe('afterRestore');
-    });
-
     it('AnchorOption updateCheck', async() => {
         let mode: null | boolean = true;
         let expected: string = 'old';
@@ -252,63 +190,6 @@ describe('AnchorOption', () => {
 });
 
 describe('PluginOptions', () => {
-    it('Golbal lifecycle', async() => {
-        let stage: 'none' | 'beforeUpdate' | 'afterUpdate' | 'beforeRestore' | 'afterRestore' = 'none';
-        const app: ComponentOptions<Vue> = {
-            template: '<div></div>',
-            data() {
-                return {
-                    key: 'old',
-                };
-            },
-            anchor: ['key'],
-        };
-        const router = new VueRouter({ routes: [{ path: '/', component: app }] });
-        const wrapper = mount(app, {
-            localVue,
-            router,
-        });
-        const anchor = new Anchor(wrapper.vm, {
-            beforeUpdate(key: string, value: any) {
-                expect(key).toBe('key');
-                expect(value).toBeUndefined();
-                expect(stage).toBe('none');
-                expect(this.$data.name).toBe('new');
-                expect(this.$route.query.name).toBeUndefined();
-                stage = 'beforeUpdate';
-            },
-            afterUpdate(key: string, value: any) {
-                expect(key).toBe('key');
-                expect(value).toBe('new');
-                expect(stage).toBe('beforeUpdate');
-                expect(this.$data.name).toBe('new');
-                expect(anchor.unpack(this.$route.query.name)).toBe('new');
-                stage = 'afterUpdate';
-            },
-            beforeRestore(key: string, value: any) {
-                expect(key).toBe('key');
-                expect(value).toBe('new');
-                expect(stage).toBe('afterUpdate');
-                expect(this.$data.name).toBe('new');
-                expect(anchor.unpack(this.$route.query.name)).toBe('new');
-                stage = 'beforeRestore';
-            },
-            afterRestore(key: string, value: any) {
-                expect(key).toBe('key');
-                expect(value).toBe('new');
-                expect(stage).toBe('beforeRestore');
-                expect(this.$data.name).toBe('new');
-                expect(anchor.unpack(this.$route.query.name)).toBe('new');
-                stage = 'afterRestore';
-            },
-        });
-        wrapper.vm.$anchor = anchor;
-
-        expect(stage).toBe('none');
-
-        wrapper.vm.$data.name = 'new';
-    });
-
     it('Global updateCheck', async() => {
         let mode: null | boolean = true;
         let expected: string = 'old';
