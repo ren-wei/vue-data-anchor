@@ -31,7 +31,7 @@ class Anchor {
         if (this.unWatchs[key]) {
             this.unWatchs[key].forEach(cb => cb());
             if (clearRoute && this.options[key] && this.vm.$route.query[this.options[key].name]) {
-                const query = Object.assign({}, this.vm.$route.query);
+                const query = { ...this.vm.$route.query };
                 delete query[this.options[key].name as string];
                 this.vm.$router.replace({
                     query: query,
@@ -64,22 +64,22 @@ class Anchor {
             // Update $route.query based on the value of the key.
             const defaults = this.pack(typeof option.defaults === 'function' ? option.defaults.call(this.vm, key) : option.defaults);
             if (packValue !== defaults) {
-                const query = Object.assign(Object.assign({}, this.vm.$route.query), {
+                const query = { ...this.vm.$route.query, ...{
                     [option.name as string]: packValue,
-                });
+                }};
                 this.vm.$router.replace({
                     query: query,
                 });
             } else if (oldPackValue) {
                 // When the value of key is the same as the default value, delete the corresponding part of the url.
-                const query = Object.assign({}, this.vm.$route.query);
+                const query = { ...this.vm.$route.query };
                 delete query[option.name as string];
                 this.vm.$router.replace({
                     query: query,
                 });
             }
         } else if (oldPackValue) {
-            const query = Object.assign({}, this.vm.$route.query);
+            const query = { ...this.vm.$route.query };
             delete query[option.name as string];
             this.vm.$router.replace({
                 query: query,
