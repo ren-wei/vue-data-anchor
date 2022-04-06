@@ -92,7 +92,7 @@ export default {
 
 * `this.$anchor.register(anchorOptions: AnchorOptions = []): void;`
 
-* `this.$anchor.unregister(key: string): boolean;`
+* `this.$anchor.unregister(key: string, clearRoute = true): boolean;`
 
 * `this.$anchor.update(key: string): void;`
 

@@ -95,7 +95,7 @@ describe('object', () => {
 
         wrapper.vm.$data.params.pageNum = 3;
         await wrapper.vm.$nextTick();
-        expect(anchor.unpack(wrapper.vm.$route.query['pageNum'])).toBe(2);
+        expect(wrapper.vm.$route.query['pageNum']).toBeUndefined();
 
         if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });

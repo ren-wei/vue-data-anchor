@@ -134,49 +134,6 @@ describe('restore', () => {
         if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
 
-    it('When unregister `key` value, unbind the value.', async() => {
-        const app: ComponentOptions<Vue> = {
-            template: '<div></div>',
-            data() {
-                return {
-                    name: 'anchor',
-                    count: 1,
-                    big: BigInt(12345678987654321),
-                    flag: false,
-                    dynamic: 'dynamic',
-                };
-            },
-            anchor: ['name', 'count', 'big', 'flag', 'dynamic'],
-        };
-        const router = new VueRouter({ routes: [{ path: '/', component: app }] });
-        const wrapper = mount(app, {
-            localVue,
-            router,
-        });
-        const anchor = new Anchor(wrapper.vm);
-        wrapper.vm.$anchor = anchor;
-
-        wrapper.vm.$router.replace({ query: {
-            name: 'schanged-first',
-            count: '031',
-        }});
-        await wrapper.vm.$nextTick();
-        expect(wrapper.vm.$data.name).toBe('changed-first');
-        expect(wrapper.vm.$data.count).toBe(31);
-
-        anchor.unregister('name');
-
-        wrapper.vm.$router.replace({ query: {
-            name: 'schanged-second',
-            count: '041',
-        }});
-        await wrapper.vm.$nextTick();
-        expect(wrapper.vm.$data.name).toBe('changed-first');
-        expect(wrapper.vm.$data.count).toBe(41);
-
-        if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
-    });
-
     it('A value that cannot be restored should throw an error.', async() => {
         const app: ComponentOptions<Vue> = {
             template: '<div></div>',

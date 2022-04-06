@@ -27,9 +27,16 @@ class Anchor {
         });
     }
 
-    public unregister(key: string): boolean {
+    public unregister(key: string, clearRoute = true): boolean {
         if (this.unWatchs[key]) {
             this.unWatchs[key].forEach(cb => cb());
+            if (clearRoute && this.options[key] && this.vm.$route.query[this.options[key].name]) {
+                const query = Object.assign({}, this.vm.$route.query);
+                delete query[this.options[key].name as string];
+                this.vm.$router.replace({
+                    query: query,
+                });
+            }
             delete this.unWatchs[key];
             delete this.options[key];
             return true;
@@ -184,7 +191,7 @@ class Anchor {
 
     /** Get value from vue's data. */
     private getValue(key: string): any {
-        let target: any = this.vm.$data;
+        let target: any = this.vm;
         key.split('.').forEach(k => {
             target = target[k];
         });
@@ -193,7 +200,7 @@ class Anchor {
 
     /** Set Value to vue's data. */
     private setValue(this: Vue, key: string, value: any) {
-        let current: any = this.$data;
+        let current: any = this;
         let target: any;
         let targetKey = key;
         key.split('.').forEach(k => {
