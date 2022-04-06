@@ -20,9 +20,16 @@ class Anchor {
             ];
         });
     }
-    unregister(key) {
+    unregister(key, clearRoute = true) {
         if (this.unWatchs[key]) {
             this.unWatchs[key].forEach(cb => cb());
+            if (clearRoute && this.options[key] && this.vm.$route.query[this.options[key].name]) {
+                const query = Object.assign({}, this.vm.$route.query);
+                delete query[this.options[key].name];
+                this.vm.$router.replace({
+                    query: query,
+                });
+            }
             delete this.unWatchs[key];
             delete this.options[key];
             return true;
@@ -177,7 +184,7 @@ class Anchor {
     }
     /** Get value from vue's data. */
     getValue(key) {
-        let target = this.vm.$data;
+        let target = this.vm;
         key.split('.').forEach(k => {
             target = target[k];
         });
@@ -185,7 +192,7 @@ class Anchor {
     }
     /** Set Value to vue's data. */
     setValue(key, value) {
-        let current = this.$data;
+        let current = this;
         let target;
         let targetKey = key;
         key.split('.').forEach(k => {
