@@ -1,6 +1,12 @@
 # vue-data-anchor
 
-[![vue-data-anchor](https://img.shields.io/badge/VueDataAnchor-1.1-brightgreen.svg)](https://www.npmjs.com/package/vue-data-anchor) [![Vue2](https://img.shields.io/badge/Vue-2.x-brightgreen.svg)](https://vuejs.org/) [![VueRouter](https://img.shields.io/badge/VueRouter-3.x-brightgreen.svg)](https://router.vuejs.org/) [![size](https://img.shields.io/badge/size-3.6k-brightgreen.svg)](https://github.com/ren-wei/vue-data-anchor) [![coverage](https://img.shields.io/badge/coverage-100%-brightgreen.svg)](https://github.com/ren-wei/vue-data-anchor)
+[![npm](https://img.shields.io/npm/v/vue-data-anchor)](https://www.npmjs.com/package/vue-data-anchor)
+![npm peer dependency version](https://img.shields.io/npm/dependency-version/vue-data-anchor/peer/vue)
+![npm peer dependency version](https://img.shields.io/npm/dependency-version/vue-data-anchor/peer/vue-router)
+![npm bundle size](https://img.shields.io/bundlephobia/min/vue-data-anchor)
+![npm](https://img.shields.io/npm/dw/vue-data-anchor)
+![coverage](https://img.shields.io/badge/coverage-100%25-green)
+![GitHub](https://img.shields.io/github/license/ren-wei/vue-data-anchor)
 
 Record the state of vue's data to the route. State is restored when refreshing or reloading elsewhere.
 
