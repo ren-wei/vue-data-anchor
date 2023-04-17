@@ -32,7 +32,7 @@ Vue.use(VueRouter)
 Vue.use(VueDataAnchor)
 ```
 
-### Quickstart
+### Quick Start
 
 We added an `anchor` option to vue to mark which data needs to be anchored.
 
@@ -103,6 +103,10 @@ export default {
 * `this.$anchor.update(key: string): void;`
 
 * `this.$anchor.restore(key: string): void;`
+
+* `this.$anchor.pack(value: any): string;`
+
+* `this.$anchor.unpack(packValue: string | (string | null)[] | undefined): any`
 
 ## Development
 
