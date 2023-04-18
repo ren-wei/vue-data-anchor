@@ -1,6 +1,6 @@
 {
     "name": "vue-data-anchor",
-    "version": "1.1.5",
+    "version": "1.1.6",
     "description": "Anchor vue state and bind it to a route.",
     "main": "dist/index.js",
     "module": "dist/index.esm.js",
