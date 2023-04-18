@@ -89,9 +89,9 @@ describe('object', () => {
         await wrapper.vm.$nextTick();
         expect(anchor.unpack(wrapper.vm.$route.query['pageNum'])).toBe(2);
 
-        expect(Object.keys(anchor['unWatchs']).length).toBe(3);
+        expect(Object.keys(anchor['unWatchList']).length).toBe(3);
         anchor.unregister('params');
-        expect(Object.keys(anchor['unWatchs']).length).toBe(0);
+        expect(Object.keys(anchor['unWatchList']).length).toBe(0);
 
         wrapper.vm.$data.params.pageNum = 3;
         await wrapper.vm.$nextTick();
@@ -121,10 +121,10 @@ describe('object', () => {
         const anchor = new Anchor(wrapper.vm);
         wrapper.vm.$anchor = anchor;
 
-        expect(Object.keys(anchor['unWatchs'])).toEqual(['params', 'params.pageNum', 'params.pageSize']);
+        expect(Object.keys(anchor['unWatchList'])).toEqual(['params', 'params.pageNum', 'params.pageSize']);
         wrapper.vm.$data.params = { pageNum: 2, total: 10 };
         await wrapper.vm.$nextTick();
-        expect(Object.keys(anchor['unWatchs'])).toEqual(['params', 'params.pageNum', 'params.total']);
+        expect(Object.keys(anchor['unWatchList'])).toEqual(['params', 'params.pageNum', 'params.total']);
 
         if (Object.keys(wrapper.vm.$route.query).length) wrapper.vm.$router.replace({ query: {}});
     });
