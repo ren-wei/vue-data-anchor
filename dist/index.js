@@ -7,7 +7,7 @@
     class Anchor {
         constructor(vm, pluginOptions) {
             this.options = {};
-            this.unWatchs = {};
+            this.unWatchList = {};
             this.vm = vm;
             this.pluginOptions = pluginOptions || {};
             this.register(this.vm.$options.anchor);
@@ -20,15 +20,15 @@
                 this.options[option.key] = option;
                 this.restore(option.key);
                 this.update(option.key);
-                this.unWatchs[option.key] = [
+                this.unWatchList[option.key] = [
                     this.vm.$watch(option.key, () => this.update(option.key)),
                     this.vm.$watch(`$route.query.${option.name}`, () => this.restore(option.key)),
                 ];
             });
         }
         unregister(key, clearRoute = true) {
-            if (this.unWatchs[key]) {
-                this.unWatchs[key].forEach(cb => cb());
+            if (this.unWatchList[key]) {
+                this.unWatchList[key].forEach(cb => cb());
                 if (clearRoute && this.options[key] && this.vm.$route.query[this.options[key].name]) {
                     const query = { ...this.vm.$route.query };
                     delete query[this.options[key].name];
@@ -36,7 +36,7 @@
                         query: query,
                     });
                 }
-                delete this.unWatchs[key];
+                delete this.unWatchList[key];
                 delete this.options[key];
                 return true;
             }
@@ -152,7 +152,7 @@
                 const value = this.getValue(key);
                 if (value !== null && typeof value === 'object') {
                     const keys = Object.keys(value).map(k => `${key}.${k}`);
-                    this.unWatchs[key] = [
+                    this.unWatchList[key] = [
                         // When the value is changed, re-register.
                         this.vm.$watch(key, () => {
                             keys.forEach(k => this.unregister(k));
